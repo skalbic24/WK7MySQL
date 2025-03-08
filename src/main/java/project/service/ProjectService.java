@@ -1,22 +1,23 @@
 package project.service;
 
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.LinkedList;
-import java.util.List;
-import project.dao.ProjectDao;
-import project.entity.Project;
-import project.exception.DbException;
+import java.nio.file.Files;      //files handling operations
+import java.nio.file.Path;      //this represents the file path
+import java.nio.file.Paths;     //this creates paths from strings
+import java.util.LinkedList;    //using linked list data structures
+import java.util.List;          //using list data structures 
+import project.dao.ProjectDao;  //data access object that interacts with the project table
+import project.entity.Project;  //this is project entity class
+import project.exception.DbException;  //custom database exception handling
 
 
 
 //This projects service represents the service layer of the Projects
+
 public class ProjectService {
 //    private static final String SCHEMA_FILE = "project-schema.sql";
 //    private static final String DATA_FILE = "project_data.sql";
-    private ProjectDao projectDao = new ProjectDao();
+    private ProjectDao projectDao = new ProjectDao(); //accessing database operations
     
     // This method creates the projects schema, then populates the tables with data.
 
@@ -96,8 +97,9 @@ public class ProjectService {
 //        }
 //       
 //    }
+    //this method adds a project by delegating to my ProjctDao
     public Project addProject(Project project) {
-    	return projectDao.insertProject(project);
+    	return projectDao.insertProject(project);   //Calls the DAO to insert the project and return it.
     }
 }  
     
