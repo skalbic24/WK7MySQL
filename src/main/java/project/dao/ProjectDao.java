@@ -4,17 +4,14 @@ import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.time.LocalTime;
-import java.util.List;
+import project.entity.Project;
+import project.exception.DbException;
 import provided.util.DaoBase;
-import projects.entity.Project;
-import projects.exception.DbException;
 
 
 //This class uses JDBC to perform CRUD operations on the project tables.
 
-@SuppressWarnings("unused")
+//@SuppressWarnings("unused")
 public class ProjectDao extends DaoBase {
 	private static final String CATERGORY_TABLE = "category";
 	private static final String MATERIAL_TABLE = "material";
@@ -31,10 +28,10 @@ public class ProjectDao extends DaoBase {
 	public Project insertProject(Project project) {
 		//@formatter:off
 		String sql = ""
-				+ "INSERT INTO " + PROJECT_TABLE + " "
-				+ "(project_name, estimate_hours, actual_hours, difficulty, notes)"
-				+"VALUES "
-				+"(?, ?, ?, ?, ?)";
+				+ " INSERT INTO " + PROJECT_TABLE + " "
+				+ " (project_name, estimated_hours, actual_hours, difficulty, notes) "
+				+ " VALUES "
+				+ " (?, ?, ?, ?, ?) ";
 		//@formatter:on
 		
 		try(Connection conn= DbConnection.getConnection()){
@@ -56,7 +53,7 @@ public class ProjectDao extends DaoBase {
 				return project;
 			}
 			catch(Exception e) {
-				return project;
+				rollbackTransaction(conn);
 				throw new DbException(e);
 			}
 		}
@@ -67,8 +64,8 @@ public class ProjectDao extends DaoBase {
 		
 	}
 	
-	public void executeBatch(List<String> sqlBatch) {
-		
-	}
+//	public void executeBatch(List<String> sqlBatch) {
+//		
+//	}
 
 }

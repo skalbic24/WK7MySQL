@@ -4,8 +4,10 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+
+import project.entity.Project;
+import project.exception.DbException;
 import project.service.ProjectService;
-import projects.exception.DbException;
 
 /**
  * This class is a menu-driven application that accepts user input from the console. It then
@@ -56,20 +58,21 @@ public class ProjectsAPP{
      */
     private void createProject() {
     	String projectName = getStringInput("Enter the project name");
-    	BigDecimal estimatedHours = getDecimalInput("Enter the estmated hours");
+    	BigDecimal estimatedHours = getDecimalInput("Enter the estimated hours");
     	BigDecimal actualHours = getDecimalInput("Enter the actual hours");
     	Integer difficulty = getIntInput("Enter the project difficulty (1-5)");
-    	String not = getStringInput("Enter the project notes");
+    	String notes = getStringInput("Enter the project notes");
     	
     	Project project = new Project();
     	
-       project.setProjecName(projectName);
+       project.setProjectName(projectName);
        project.setEstimatedHours(estimatedHours);
        project.setActualHours(actualHours);
-       project.setDefficulty(difficulty);
+       project.setDifficulty(difficulty);
        project.setNotes(notes);
+       System.out.println(project);
        
-       Project dbProject = projectService.adProject(project);
+       Project dbProject = projectService.addProject(project);
        System.out.println("You have succefully created project: " + dbProject);
     }
 
@@ -139,15 +142,15 @@ public class ProjectsAPP{
     	
     	// This will print the menu selection, one per line.
     	private void printOperations() {
-    		System.out.println("/nThese are the available selection. Press the Enter key to quit:");
+    		System.out.println("\nThese are the available selection. Press the Enter key to quit:");
     		
     		//with Lambda expression
     		operations.forEach(line -> System.out.println(" " + line));
     		
     		//Enhanced for loop
     		
-    		for(String line : operations) {
-    			System.out.println(" " +line);
-    		}
+//    		for(String line : operations) {
+//    			System.out.println(" " +line);
+//    		}
     }
 }
