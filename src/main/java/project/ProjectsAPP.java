@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
-
 import project.entity.Project;
 import project.exception.DbException;
 import project.service.ProjectService;
@@ -17,9 +16,15 @@ import project.service.ProjectService;
 public class ProjectsAPP{
 	private Scanner scanner = new Scanner(System.in);
 	private ProjectService projectService = new ProjectService();
+	private Project curProject; //
+	
 
     // @formatter:off
-    private List<String> operations = List.of("1) Add a project");
+    private List<String> operations = List.of(
+    		"1) Add a project",
+    		"2) List projects",
+    		"3) Select a project"
+    );
     
     // @formatter:on
      //Entry point for Java application.
@@ -43,6 +48,12 @@ public class ProjectsAPP{
                     case 1:
                         createProject(); // Call method to create project
                         break;
+                    case 2:
+                    	listProjects();
+                    	break;
+                    case 3:
+                    	selectProject();
+                    	break;
                     default:
                         System.out.println("\n" + selection + " is not a valid selection. Try again.");
                         break;
@@ -53,6 +64,27 @@ public class ProjectsAPP{
         }
     }
 
+    private void selectProject() {
+    	listProjects();
+    	Integer projectId = getIntInput("Enter a project ID to select a project");
+    }
+    
+    // Un-select the current project
+    curProject = null;
+    
+    //This will throw an exception if an invalid project ID is entered
+    curProject = projectService.fetchProjectById(projectId);
+    
+    private void listPorjects() {
+    	List<Project> projects = projectService.fetchAllProjects();
+    	
+    	System.out.println("\nProjects:");
+    	
+    	projects.forEach(project -> System.out.println("  " + project.getProjectId() 
+    	+ ": " + project.getProjectName()));
+    	
+    }
+    
     /* This method gathers users input for a project row then calls the project service to 
      * create that row
      */
@@ -70,7 +102,7 @@ public class ProjectsAPP{
        project.setActualHours(actualHours);
        project.setDifficulty(difficulty);
        project.setNotes(notes);
-       System.out.println(project);
+       
        
        Project dbProject = projectService.addProject(project);
        System.out.println("You have succefully created project: " + dbProject);
@@ -152,5 +184,12 @@ public class ProjectsAPP{
 //    		for(String line : operations) {
 //    			System.out.println(" " +line);
 //    		}
-    }
+    		
+    		if(Objects.isNull(curProject)) {
+    			System.out.println("\nYou are not working with a project.");
+    		}
+    		else {
+    			System.out.println("\nYou are working with project: " + curProject);
+    		}
+     }
 }
