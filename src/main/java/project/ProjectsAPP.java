@@ -179,12 +179,6 @@ public class ProjectsAPP{
     		//with Lambda expression
     		operations.forEach(line -> System.out.println(" " + line));
     		
-    		//Enhanced for loop
-    		
-//    		for(String line : operations) {
-//    			System.out.println(" " +line);
-//    		}
-    		
     		if(Objects.isNull(curProject)) {
     			System.out.println("\nYou are not working with a project.");
     		}
