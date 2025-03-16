@@ -21,7 +21,7 @@ import provided.util.DaoBase;         //DAO utilities that provide common functi
 
 //@SuppressWarnings("unused")    //Here are the constants for table names used in SQL queries
 public class ProjectDao extends DaoBase {
-	private static final String CATERGORY_TABLE = "category";
+	private static final String CATEGORY_TABLE = "category";
 	private static final String MATERIAL_TABLE = "material";
 	private static final String PROJECT_TABLE = "project";
 	private static final String PROJECT_CATEGORY_TABLE = "project_category";

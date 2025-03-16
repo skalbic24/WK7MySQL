@@ -1,10 +1,16 @@
+/**
+ * 
+ */
 package project.entity;
 
 import java.math.BigDecimal;
 import java.util.LinkedList;
 import java.util.List;
 
-//This class represents a project entity with relevant attributes and methods
+/**
+ * @author Promineo
+ *
+ */
 public class Project {
   private Integer projectId;
   private String projectName;
@@ -13,16 +19,9 @@ public class Project {
   private Integer difficulty;
   private String notes;
 
-  //List to hold associated materials, steps, and categories for the project.
   private List<Material> materials = new LinkedList<>();
   private List<Step> steps = new LinkedList<>();
   private List<Category> categories = new LinkedList<>();
-  
-  /**
-   * Then we have bunch of getter and setter methods for each attribute 
-   * are provided to access and modify the project properties.
-   * 
-   */
 
   public Integer getProjectId() {
     return projectId;
@@ -84,15 +83,10 @@ public class Project {
     return categories;
   }
 
-  /**
-   * Override the toString method to provide a string 
-   * representation of the Project object.
-   */
   @Override
   public String toString() {
     String result = "";
     
-    //Append project details to the results string.
     result += "\n   ID=" + projectId;
     result += "\n   name=" + projectName;
     result += "\n   estimatedHours=" + estimatedHours;
@@ -100,25 +94,24 @@ public class Project {
     result += "\n   difficulty=" + difficulty;
     result += "\n   notes=" + notes;
     
-    
-    //Append materials to the result string
     result += "\n   Materials:";
+    
     for(Material material : materials) {
-      result += "\n      " + material;  //Calls the toString method of Material
+      result += "\n      " + material;
     }
     
-    //Append steps to the result string
     result += "\n   Steps:";
+    
     for(Step step : steps) {
-      result += "\n      " + step;  //calls the toString method of Step
+      result += "\n      " + step;
     }
     
-    //Append categories to the result string
     result += "\n   Categories:";
+    
     for(Category category : categories) {
-      result += "\n      " + category;   //calls the toString method of Category
+      result += "\n      " + category;
     }
     
-    return result;     //return the complete string representation of the project
+    return result;
   }
 }
