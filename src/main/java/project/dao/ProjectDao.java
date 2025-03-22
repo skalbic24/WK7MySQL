@@ -18,8 +18,7 @@ import provided.util.DaoBase;         //DAO utilities that provide common functi
 
 
 //This class uses JDBC to perform CRUD operations on the project tables.
-
-//@SuppressWarnings("unused")    //Here are the constants for table names used in SQL queries
+//Here are the constants for table names used in SQL queries
 public class ProjectDao extends DaoBase {
 	private static final String CATEGORY_TABLE = "category";
 	private static final String MATERIAL_TABLE = "material";
@@ -104,6 +103,7 @@ public class ProjectDao extends DaoBase {
 		      throw new DbException(e);
 		    }
 		  }
+	
 	 
 	 public Optional<Project> fetchProjectById(Integer projectId) {
 		    String sql = "SELECT * FROM " + PROJECT_TABLE + " WHERE project_id = ?";
@@ -146,6 +146,8 @@ public class ProjectDao extends DaoBase {
 		      throw new DbException(e);
 		    }
 		  }
+	 
+	 
 	 private List<Category> fetchCategoriesForProject(Connection conn, Integer projectId) {
 		    // @formatter:off
 		    String sql = ""
@@ -171,6 +173,7 @@ public class ProjectDao extends DaoBase {
 		      throw new DbException(e);
 		    }
 		  }
+	
 	 
 	 private List<Step> fetchStepsForProject(Connection conn, Integer projectId) throws SQLException {
 		    String sql = "SELECT * FROM " + STEP_TABLE + " WHERE project_id = ?";
@@ -189,6 +192,8 @@ public class ProjectDao extends DaoBase {
 		      }
 		    }
 		  }
+	
+	 
 	 private List<Material> fetchMaterialsForProject(Connection conn, Integer projectId)
 		      throws SQLException {
 		    String sql = "SELECT * FROM " + MATERIAL_TABLE + " WHERE project_id = ?";
@@ -205,6 +210,75 @@ public class ProjectDao extends DaoBase {
 
 		        return materials;
 		      }
+		    }
+		  }
+	
+	 
+	 public boolean modifyProjectDetails(Project project) {
+		    // @formatter:off
+		    String sql = ""
+		        + "UPDATE " + PROJECT_TABLE + " SET "
+		        + "project_name = ?, "
+		        + "estimated_hours = ?, "
+		        + "actual_hours = ?, "
+		        + "difficulty = ?, "
+		        + "notes = ? "
+		        + "WHERE project_id = ?";
+		    // @formatter:on
+
+		    try(Connection conn = DbConnection.getConnection()) {
+		      startTransaction(conn);
+
+		      try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+		        setParameter(stmt, 1, project.getProjectName(), String.class);
+		        setParameter(stmt, 2, project.getEstimatedHours(), BigDecimal.class);
+		        setParameter(stmt, 3, project.getActualHours(), BigDecimal.class);
+		        setParameter(stmt, 4, project.getDifficulty(), Integer.class);
+		        setParameter(stmt, 5, project.getNotes(), String.class);
+		        setParameter(stmt, 6, project.getProjectId(), Integer.class);
+
+		        boolean modified = stmt.executeUpdate() == 1;
+		        commitTransaction(conn);
+
+		        return modified;
+		      }
+		      catch(Exception e) {
+		        rollbackTransaction(conn);
+		        throw new DbException(e);
+		      }
+		    }
+		    catch(SQLException e) {
+		      throw new DbException(e);
+		    }
+		  }
+	 
+	 
+	 public boolean deleteProject(Integer projectId) {
+		    String sql = "DELETE FROM " + PROJECT_TABLE + " WHERE project_id = ?";
+
+		    try(Connection conn = DbConnection.getConnection()) {
+		      startTransaction(conn);
+
+		      try(PreparedStatement stmt = conn.prepareStatement(sql)) {
+		        setParameter(stmt, 1, projectId, Integer.class);
+
+		        /*
+		         * If the project ID is correct, the number of rows modified will be 1. This is the value
+		         * returned by executeUpdate(). The value will be 1 even if child rows are deleted because
+		         * ON DELETE CASCADE is specified.
+		         */
+		        boolean deleted = stmt.executeUpdate() == 1;
+
+		        commitTransaction(conn);
+		        return deleted;
+		      }
+		      catch(Exception e) {
+		        rollbackTransaction(conn);
+		        throw new DbException(e);
+		      }
+		    }
+		    catch(SQLException e) {
+		      throw new DbException(e);
 		    }
 		  }
 }

@@ -23,7 +23,9 @@ public class ProjectsAPP{
     private List<String> operations = List.of(
     		"1) Add a project",
     		"2) List projects",
-    		"3) Select a project"
+    		"3) Select a project",
+    		"4) Update project details",
+    		"5) Delete a project"
     );
     
     // @formatter:on
@@ -58,6 +60,15 @@ public class ProjectsAPP{
               case 3:
                 selectProject();
                 break;
+                
+              case 4:
+            	updateProjectDetails();
+            	break;
+            	  
+              case 5:
+                deleteProject();
+                break;
+              
 
               default:
                 System.out.println("\n" + selection + " is not a valid selection. Try again.");
@@ -70,7 +81,74 @@ public class ProjectsAPP{
         }
       }
 
+    /**This method deletes a project and all project child records 
+     * (materials, steps and categories).
+     */
+      private void deleteProject() {
+    	  listProjects();
+
+    	    Integer projectId = getIntInput("Enter the ID of the project to delete");
+
+    	    projectService.deleteProject(projectId);
+    	    System.out.println("Project " + projectId + " was deleted successfully.");
+    	  
+    	    if(Objects.nonNull(curProject) && curProject.getProjectId().equals(projectId)) {
+    	      curProject = null;
+    	    }
+	}
+      
       /**
+       * This method allows the user to modify project details. The user is asked to modify each field
+       * in the project. The value in the current project is displayed as a default. If the user presses
+       * Enter without entering a value, the value in the current project is unchanged.
+       */
+
+	private void updateProjectDetails() {
+		//If there is no current project selected, return to the menu.
+		if(Objects.isNull(curProject)) {
+		      System.out.println("\nPlease select a project.");
+		      return;
+		    }
+		/*
+	     * Collect input from the user. If the user presses Enter without entering a value, the local
+	     * variable will be null.
+	     */
+	    String projectName =
+	        getStringInput("Enter the project name [" + curProject.getProjectName() + "]");
+
+	    BigDecimal estimatedHours =
+	        getDecimalInput("Enter the estimated hours [" + curProject.getEstimatedHours() + "]");
+
+	    BigDecimal actualHours =
+	        getDecimalInput("Enter the actual hours + [" + curProject.getActualHours() + "]");
+
+	    Integer difficulty =
+	        getIntInput("Enter the project difficulty (1-5) [" + curProject.getDifficulty() + "]");
+
+	    String notes = getStringInput("Enter the project notes [" + curProject.getNotes() + "]");
+
+	    //Create and populate a Project object.
+	    Project project = new Project();
+
+	    project.setProjectId(curProject.getProjectId());
+	    project.setProjectName(Objects.isNull(projectName) ? curProject.getProjectName() : projectName);
+
+	    project.setEstimatedHours(
+	        Objects.isNull(estimatedHours) ? curProject.getEstimatedHours() : estimatedHours);
+
+	    project.setActualHours(Objects.isNull(actualHours) ? curProject.getActualHours() : actualHours);
+	    project.setDifficulty(Objects.isNull(difficulty) ? curProject.getDifficulty() : difficulty);
+	    project.setNotes(Objects.isNull(notes) ? curProject.getNotes() : notes);
+
+	    /* Call the project service to update the project details. */
+	    projectService.modifyProjectDetails(project);
+
+	    /* Re-read the current project, which will display the new details. */
+	    curProject = projectService.fetchProjectById(curProject.getProjectId());
+	
+	}
+
+	/**
        * This method allows the user to select a "current" project. The current project is one on which
        * you can add materials, steps, and categories.
        */
@@ -209,6 +287,16 @@ public class ProjectsAPP{
 
         return input.isBlank() ? null : input.trim();
       }
+      
+      /**
+       * Print the given line on the console. Indent the line by three spaces. This method is provided
+       * so that the lines can be printed using a method reference.
+       * 
+       * @param line The line to front.
+       */
+      private void printWithIndent(String line) {
+        System.out.println("   " + line);
+      }
 
       /**
        * Print the menu selections, one per line.
@@ -217,12 +305,7 @@ public class ProjectsAPP{
         System.out.println("\nThese are the available selections. Press the Enter key to quit:");
 
         /* With Lambda expression */
-        operations.forEach(line -> System.out.println("  " + line));
-
-        /* With enhanced for loop */
-        // for(String line : operations) {
-        // System.out.println(" " + line);
-        // }
+        operations.forEach(line -> printWithIndent(line));
 
         if(Objects.isNull(curProject)) {
           System.out.println("\nYou are not working with a project.");
