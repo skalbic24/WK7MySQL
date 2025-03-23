@@ -3,16 +3,16 @@ package project.dao;
 import java.math.BigDecimal;  //handling my decimal values(estimated, hours)
 import java.sql.Connection;   //managing SQL connections
 import java.sql.PreparedStatement;  //executing pre-compiled SQL statements
-import java.sql.ResultSet;
+import java.sql.ResultSet;         //handling SQL query results
 import java.sql.SQLException;      //handling SQL exceptions
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import project.entity.Category;
-import project.entity.Material;
+import java.util.LinkedList;      //For using a linked list implementation
+import java.util.List;            //For using lists
+import java.util.Objects;         //For null checks
+import java.util.Optional;        //For optional values 
+import project.entity.Category;   //category entity class
+import project.entity.Material;   //material entity class
 import project.entity.Project;    //project entity class
-import project.entity.Step;
+import project.entity.Step;       //step entity class
 import project.exception.DbException;  //custom data exceptions
 import provided.util.DaoBase;         //DAO utilities that provide common functionality
 
@@ -104,7 +104,12 @@ public class ProjectDao extends DaoBase {
 		    }
 		  }
 	
-	 
+	 /**
+	  * Fetches a project by its ID 
+	  * 
+	  * @param projectId The ID of the project to fetch
+	  * @return An Optional containing the project if found, otherwise empty
+	  */
 	 public Optional<Project> fetchProjectById(Integer projectId) {
 		    String sql = "SELECT * FROM " + PROJECT_TABLE + " WHERE project_id = ?";
 
@@ -120,12 +125,12 @@ public class ProjectDao extends DaoBase {
 		          
 		          try(ResultSet rs = stmt.executeQuery()) {
 		              if(rs.next()) {
-		                project = extract(rs, Project.class);
+		                project = extract(rs, Project.class); //Extract project data
 		              }
 		            }
 		          }
 		        
-		      
+		      //If the project is found, fetch related materials, steps, and categories
 		        if(Objects.nonNull(project)) {
 		          project.getMaterials().addAll(fetchMaterialsForProject(conn, projectId));
 		          project.getSteps().addAll(fetchStepsForProject(conn, projectId));
@@ -135,10 +140,10 @@ public class ProjectDao extends DaoBase {
 		        commitTransaction(conn);
 
 		     
-		        return Optional.ofNullable(project);
+		        return Optional.ofNullable(project); //return found project 
 		      }
 		      catch(Exception e) {
-		        rollbackTransaction(conn);
+		        rollbackTransaction(conn);  //rollback on error 
 		        throw new DbException(e);
 		      }
 		    }
@@ -147,6 +152,13 @@ public class ProjectDao extends DaoBase {
 		    }
 		  }
 	 
+	 /**
+	  * Fetches categories associated with a project 
+	  * 
+	  * @param conn
+	  * @param projectId
+	  * @return
+	  */
 	 
 	 private List<Category> fetchCategoriesForProject(Connection conn, Integer projectId) {
 		    // @formatter:off
@@ -174,7 +186,13 @@ public class ProjectDao extends DaoBase {
 		    }
 		  }
 	
-	 
+	 /**
+	  * Fetches steps associated with a project
+	  * @param conn
+	  * @param projectId
+	  * @return
+	  * @throws SQLException
+	  */
 	 private List<Step> fetchStepsForProject(Connection conn, Integer projectId) throws SQLException {
 		    String sql = "SELECT * FROM " + STEP_TABLE + " WHERE project_id = ?";
 
@@ -193,6 +211,14 @@ public class ProjectDao extends DaoBase {
 		    }
 		  }
 	
+	 /**
+	  * Fetches materials associated with a project 
+	  * 
+	  * @param conn
+	  * @param projectId
+	  * @return
+	  * @throws SQLException
+	  */
 	 
 	 private List<Material> fetchMaterialsForProject(Connection conn, Integer projectId)
 		      throws SQLException {
@@ -213,6 +239,12 @@ public class ProjectDao extends DaoBase {
 		    }
 		  }
 	
+	 /**
+	  * Modifies the details of a project
+	  * 
+	  * @param project the project object containing updated detail
+	  * @return  true if the modification was successful, otherwise false
+	  */
 	 
 	 public boolean modifyProjectDetails(Project project) {
 		    // @formatter:off
@@ -237,7 +269,7 @@ public class ProjectDao extends DaoBase {
 		        setParameter(stmt, 5, project.getNotes(), String.class);
 		        setParameter(stmt, 6, project.getProjectId(), Integer.class);
 
-		        boolean modified = stmt.executeUpdate() == 1;
+		        boolean modified = stmt.executeUpdate() == 1; //Check if one row was updated 
 		        commitTransaction(conn);
 
 		        return modified;
@@ -252,6 +284,12 @@ public class ProjectDao extends DaoBase {
 		    }
 		  }
 	 
+	 /**
+	  * Deletes a project by its ID
+	  * 
+	  * @param projectId
+	  * @return true if the project was deleted, otherwise false
+	  */
 	 
 	 public boolean deleteProject(Integer projectId) {
 		    String sql = "DELETE FROM " + PROJECT_TABLE + " WHERE project_id = ?";
